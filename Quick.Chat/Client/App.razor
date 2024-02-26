@@ -1,4 +1,5 @@
-﻿<CascadingAuthenticationState>
+@using Quick.Chat.Client.Shared
+<CascadingAuthenticationState>
     <Router AppAssembly="@typeof(Program).Assembly" PreferExactMatches="@true">
         <Found Context="routeData">
             <AuthorizeRouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)">
