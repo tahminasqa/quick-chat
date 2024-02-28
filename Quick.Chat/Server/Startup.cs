@@ -7,6 +7,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.AspNetCore.Identity;
+using System;
 
 namespace Quick.Chat.Server
 {
@@ -35,6 +37,7 @@ namespace Quick.Chat.Server
 
             services.AddIdentityServer()
                 .AddApiAuthorization<ApplicationUser, ApplicationDbContext>();
+
 
             services.AddAuthentication()
                 .AddIdentityServerJwt();
