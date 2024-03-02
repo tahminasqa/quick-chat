@@ -11,6 +11,10 @@ using System.Collections.Generic;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Antiforgery;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Quick.Chat.Client
 {
@@ -28,6 +32,17 @@ namespace Quick.Chat.Client
             builder.Services.AddScoped(sp => sp.GetRequiredService<IHttpClientFactory>().CreateClient("Quick.Chat.ServerAPI"));
             builder.Services.AddMudServices(c => { c.SnackbarConfiguration.PositionClass = Defaults.Classes.Position.BottomRight; });
             builder.Services.AddApiAuthorization();
+
+            builder.Services.Configure<AntiforgeryOptions>(config =>
+            {
+                config.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
+            });
+
+            builder.Services.Configure<CookieTempDataProviderOptions>(config =>
+            {
+                config.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
+            });
+
             builder.Services.AddTransient<IChatManager, ChatManager>();
             await builder.Build().RunAsync();
         }
