@@ -52,9 +52,9 @@ namespace Quick.Chat.Server
             StringBuilder sb = new();
             sb.AppendLine();
             sb.AppendLine("******************************************************");
-            sb.AppendLine("**                  Quick Chat                      **");
-            sb.AppendLine("**               [Version 1.0.7]                    **");
-            sb.AppendLine("**     ©2024 Quick Chat. All rights reserved        **");
+            sb.AppendLine("**                  QuickChat                      **");
+            sb.AppendLine("**              [Version 1.0.8.1]                  **");
+            sb.AppendLine("**     ©2024 QuickChat. All rights reserved        **");
             sb.AppendLine("******************************************************");
 
             startupLogger.LogInformation(sb.ToString());

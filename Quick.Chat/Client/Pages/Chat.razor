@@ -19,10 +19,10 @@
             {
                 <div class="d-flex flex-row my-4">
                     <div class="mr-4">
-                        <MudAvatar Color="Color.Secondary" Style="height:50px; width:50px;">@message.FromUser.Email.ToUpper().FirstOrDefault()</MudAvatar>
+                        <MudAvatar Color="Color.Secondary" Style="height:50px; width:50px;">@message.FromUser.UserName.ToUpper().FirstOrDefault()</MudAvatar>
                     </div>
                     <div>
-                        <MudText Typo="Typo.body1">@message.FromUser.Email</MudText>
+                        <MudText Typo="Typo.body1">@message.FromUser.UserName</MudText>
                         <MudText Typo="Typo.caption" Style="font-size: xx-small!important;">@message.CreatedDate.ToString("dd MMM, yyyy hh:mm tt")</MudText>
                         <MudText Typo="Typo.body2" Style=" padding: 15px;background-color: var(--mud-palette-background-grey);border-radius: 5px;margin-top:5px">@message.Message</MudText>
                     </div>
@@ -38,7 +38,7 @@
         <MudPaper Elevation="25" Class="pa-3 ml-6" MinWidth="350px">
             <MudToolBar Dense="true">
                 <MudText Typo="Typo.h6" Inline="true" Class="mr-2">#</MudText>
-                <MudText Typo="Typo.h6">contacts</MudText>
+                <MudText Typo="Typo.h6">Online Users</MudText>
             </MudToolBar>
             <div class="d-flex flex-column px-4" style="max-height:70vh;min-height:70vh; overflow:scroll;">
                 <MudList Clickable="true">
@@ -50,17 +50,17 @@
                                     <MudBadge Class="my-2">
                                         @if (user.Id == ContactId)
                                         {
-                                            <MudAvatar Color="Color.Secondary" Style="height:50px; width:50px;">@user.Email.ToUpper().FirstOrDefault()</MudAvatar>
+                                            <MudAvatar Color="Color.Secondary" Style="height:50px; width:50px;">@user.UserName.ToUpper().FirstOrDefault()</MudAvatar>
                                         }
                                         else
                                         {
-                                            <MudAvatar Color="Color.Dark" Style="height:50px; width:50px;">@user.Email.ToUpper().FirstOrDefault()</MudAvatar>
+                                            <MudAvatar Color="Color.Dark" Style="height:50px; width:50px;">@user.UserName.ToUpper().FirstOrDefault()</MudAvatar>
                                         }
                                     </MudBadge>
                                 </div>
                                 <div>
-                                    <MudText Typo="Typo.body2" Class="mt-3 mb-n2">@user.Email</MudText>
-                                    <MudText Typo="Typo.caption" Style="font-size: xx-small!important;">@user.Id</MudText>
+                                    <MudText Typo="Typo.body2" Class="mt-3 mb-n2">@user.UserName</MudText>
+                                    <MudText Typo="Typo.caption" Style="font-size: xx-small!important;">@user.Email</MudText>
                                 </div>
                             </div>
                         </MudListItem>
