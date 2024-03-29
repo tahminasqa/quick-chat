@@ -60,9 +60,9 @@ namespace Quick.Chat.Shared
                 Console.WriteLine("ChatClient: calling Start()");
 
                 // add handler for receiving messages
-                _hubConnection.On<string, string, DateTime>(Messages.RECEIVE, (user, message, createTime) =>
+                _hubConnection.On<string, string>(Messages.RECEIVE, (user, message) =>
                 {
-                    HandleReceiveMessage(user, message, createTime);
+                    HandleReceiveMessage(user, message);
                 });
 
                 // start the connection
@@ -81,10 +81,10 @@ namespace Quick.Chat.Shared
         /// </summary>
         /// <param name="method">event name</param>
         /// <param name="message">message content</param>
-        private void HandleReceiveMessage(string username, string message, DateTime createTime)
+        private void HandleReceiveMessage(string username, string message)
         {
             // raise an event to subscribers
-            MessageReceived?.Invoke(this, new MessageReceivedEventArgs(username, message, createTime));
+            MessageReceived?.Invoke(this, new MessageReceivedEventArgs(username, message));
         }
 
         /// <summary>
@@ -147,11 +147,10 @@ namespace Quick.Chat.Shared
     /// </summary>
     public class MessageReceivedEventArgs : EventArgs
     {
-        public MessageReceivedEventArgs(string username, string message, DateTime createTime)
+        public MessageReceivedEventArgs(string username, string message)
         {
             Username = username;
             Message = message;
-            CreateTime = createTime;
         }
 
         /// <summary>

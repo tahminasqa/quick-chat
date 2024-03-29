@@ -2,7 +2,7 @@ version: '3.4'
 
 services:
   quick.chat.server:
-    image: tahminasqa/quick.chat:v1.0.8.1
+    image: tahminasqa/quick.chat:v1.1.0.0
     build:
       context: .
       dockerfile: Quick.Chat/Server/Dockerfile

@@ -54,7 +54,7 @@ namespace Quick.Chat.Server
             sb.AppendLine();
             sb.AppendLine("******************************************************");
             sb.AppendLine("**                  QuickChat                      **");
-            sb.AppendLine("**              [Version 1.0.8.1]                  **");
+            sb.AppendLine("**              [Version 1.1.0.0]                  **");
             sb.AppendLine("**     ©2024 QuickChat. All rights reserved        **");
             sb.AppendLine("******************************************************");
 

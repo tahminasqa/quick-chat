@@ -34,29 +34,22 @@
         }
     }
     <MudPaper Elevation="25" Class="py-4 flex-grow-1">
+
         @if (chatting)
         {
-            <div class="d-flex flex-column px-4" style="max-height:65vh;min-height:65vh; overflow:scroll;" id="chatContainer">
+            <div id="scrollbox">
+
                 @foreach (var item in messages)
                 {
-                    <div class="d-flex flex-row my-4">
-                        <div class="mr-4">
-                            <MudAvatar Color="Color.Secondary" Style="height:50px; width:50px;">@item.Username.ToUpper().FirstOrDefault()</MudAvatar>
-                        </div>
-                        <div>
-                            <MudText Typo="Typo.body1">@item.Username</MudText>
-                            <MudText Typo="Typo.caption" Style="font-size: xx-small!important;">@item.CreateTime.ToString("dd MMM, yyyy hh:mm tt")</MudText>
-                            <MudText Typo="Typo.body2" Style=" padding: 15px;background-color: var(--mud-palette-background-grey);border-radius: 5px;margin-top:5px">@item.Body</MudText>
-                        </div>
+                    <div class="@item.CSS">
+                        <div class="user">@item.Username</div>
+                        <div class="msg">@item.Body</div>
                     </div>
                 }
-                
+                <hr />
+                <textarea class="input-lg" placeholder="enter your comment" @bind="@newMessage"></textarea>
+                <button class="btn btn-outline-primary" @onclick="@SendAsync">Send</button>
             </div>
-            <MudPaper Elevation="25" Class="d-flex flex-row px-2 mx-4" Style="">
-                <MudTextField T="string" Placeholder="Enter your message..." DisableUnderLine="true" Class="mt-n2 mx-4"
-                              @bind-Value="@newMessage" For="@(()=> newMessage)" />
-                <MudButton OnClick="@SendAsync" StartIcon="@Icons.Material.Outlined.Send" Color="Color.Secondary" ButtonType="ButtonType.Button">Send</MudButton>
-            </MudPaper>
         }
     </MudPaper>
 </div>
@@ -123,14 +116,14 @@
     /// <param name="e"></param>
     void MessageReceived(object sender, MessageReceivedEventArgs e)
     {
-        Console.WriteLine($"Blazor: receive {e.Username}: {e.Message}: {e.CreateTime}");
+        Console.WriteLine($"Blazor: receive {e.Username}: {e.Message}");
         bool isMine = false;
         if (!string.IsNullOrWhiteSpace(e.Username))
         {
             isMine = string.Equals(e.Username, username, StringComparison.CurrentCultureIgnoreCase);
         }
 
-        var newMsg = new Message(e.Username, e.Message, isMine, e.CreateTime);
+        var newMsg = new Message(e.Username, e.Message, isMine);
         messages.Add(newMsg);
 
         // Inform blazor the UI needs updating
@@ -161,17 +154,16 @@
 
     class Message
     {
-        public Message(string username, string body, bool mine, DateTime createTime)
+        public Message(string username, string body, bool mine)
         {
             Username = username;
             Body = body;
             Mine = mine;
-            CreateTime = createTime;
         }
 
         public string Username { get; set; }
         public string Body { get; set; }
-        public DateTime CreateTime { get; set; }
+        //public DateTime CreateTime { get; set; }
         public bool Mine { get; set; }
 
         /// <summary>
