@@ -25,9 +25,9 @@ namespace Quick.Chat.Server.Hubs
         /// <param name="username"></param>
         /// <param name="message"></param>
         /// <returns></returns>
-        public async Task SendMessage(string username, string message)
+        public async Task SendMessage(string username, string message, DateTime createTime)
         {
-            await Clients.All.SendAsync(Messages.RECEIVE, username, message);
+            await Clients.All.SendAsync(Messages.RECEIVE, username, message, createTime);
         }
 
         /// <summary>

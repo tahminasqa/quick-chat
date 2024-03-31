@@ -60,9 +60,9 @@ namespace Quick.Chat.Shared
                 Console.WriteLine("ChatClient: calling Start()");
 
                 // add handler for receiving messages
-                _hubConnection.On<string, string>(Messages.RECEIVE, (user, message) =>
+                _hubConnection.On<string, string, DateTime>(Messages.RECEIVE, (user, message, createTime) =>
                 {
-                    HandleReceiveMessage(user, message);
+                    HandleReceiveMessage(user, message, createTime);
                 });
 
                 // start the connection
@@ -81,10 +81,10 @@ namespace Quick.Chat.Shared
         /// </summary>
         /// <param name="method">event name</param>
         /// <param name="message">message content</param>
-        private void HandleReceiveMessage(string username, string message)
+        private void HandleReceiveMessage(string username, string message, DateTime createTime)
         {
             // raise an event to subscribers
-            MessageReceived?.Invoke(this, new MessageReceivedEventArgs(username, message));
+            MessageReceived?.Invoke(this, new MessageReceivedEventArgs(username, message, createTime));
         }
 
         /// <summary>
@@ -105,7 +105,7 @@ namespace Quick.Chat.Shared
             if (!_started)
                 throw new InvalidOperationException("Client not started");
             // send the message
-            await _hubConnection.SendAsync(Messages.SEND, _username, message);
+            await _hubConnection.SendAsync(Messages.SEND, _username, message, DateTime.Now);
         }
 
         /// <summary>
@@ -147,10 +147,11 @@ namespace Quick.Chat.Shared
     /// </summary>
     public class MessageReceivedEventArgs : EventArgs
     {
-        public MessageReceivedEventArgs(string username, string message)
+        public MessageReceivedEventArgs(string username, string message, DateTime createTime)
         {
             Username = username;
             Message = message;
+            CreateTime = createTime;
         }
 
         /// <summary>

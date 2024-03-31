@@ -7,25 +7,27 @@
     @if (chatting)
     {
         <p>You are connected as <b>@username</b></p>
-        <button class="btn btn-sm btn-warning ml-md-auto" @onclick="@DisconnectAsync">Disconnect</button>
+        @* <button class="btn btn-sm btn-warning ml-md-auto" @onclick="@DisconnectAsync">Click here to Disconnect</button> *@
+
+        <MudButton OnClick="@DisconnectAsync" StartIcon="@Icons.Material.Outlined.Outbond" Color="Color.Secondary" ButtonType="ButtonType.Button">Leave group Chat</MudButton>
+
     }
 </div>
 
 <div class="content px-4">
 
     <h1>Group Chat </h1>
-    
+
     @if (!chatting)
     {
-        @* Moved instructions to shared component *@
-        <Instructions />
-
         <p>
             Enter your name to start chatting:
         </p>
 
         <input type="text" maxlength="32" @bind="@username" />
-        <button type="button" @onclick="@Chat"><span class="oi oi-chat" aria-hidden="true"></span> Send</button>
+       @*  <button type="button" @onclick="@Chat"><span class="oi oi-chat" aria-hidden="true"></span> Click here to join the group</button>
+        *@
+        <MudButton OnClick="@Chat" StartIcon="@Icons.Material.Outlined.Group" Color="Color.Secondary" ButtonType="ButtonType.Button">Join the group</MudButton>
 
         @if (message != null)
         {
@@ -33,25 +35,35 @@
             <small id="emailHelp" class="form-text text-muted">@message</small>
         }
     }
-    <MudPaper Elevation="25" Class="py-4 flex-grow-1">
+</div>
+<div class="d-flex flex-grow-1 flex-grow-0">
+    @if (chatting)
+    {
+        <MudPaper Elevation="25" Class="py-4 flex-grow-1">
 
-        @if (chatting)
-        {
-            <div id="scrollbox">
-
-                @foreach (var item in messages)
+            <div class="d-flex flex-column px-4" style="max-height:65vh;min-height:65vh; overflow:scroll;" id="chatContainer">
+                @foreach (var message in messages)
                 {
-                    <div class="@item.CSS">
-                        <div class="user">@item.Username</div>
-                        <div class="msg">@item.Body</div>
+                    <div class="d-flex flex-row my-4">
+                        <div class="mr-4">
+                            <MudAvatar Color="Color.Secondary" Style="height:50px; width:50px;">@message.Username.ToUpper().FirstOrDefault()</MudAvatar>
+                        </div>
+                        <div>
+                            <MudText Typo="Typo.body1">@message.Username</MudText>
+                            <MudText Typo="Typo.caption" Style="font-size: xx-small!important;">@message.CreateTime.ToString("dd MMM, yyyy hh:mm tt")</MudText>
+                            <MudText Typo="Typo.body2" Style=" padding: 15px;background-color: var(--mud-palette-background-grey);border-radius: 5px;margin-top:5px">@message.Body</MudText>
+                        </div>
                     </div>
                 }
-                <hr />
-                <textarea class="input-lg" placeholder="enter your comment" @bind="@newMessage"></textarea>
-                <button class="btn btn-outline-primary" @onclick="@SendAsync">Send</button>
             </div>
-        }
-    </MudPaper>
+
+            <MudPaper Elevation="25" Class="d-flex flex-row px-2 mx-4" Style="">
+                <MudTextField T="string" Placeholder="Enter your message..." DisableUnderLine="true" Class="mt-n2 mx-4"
+                              @bind-Value="@newMessage" OnKeyDown="SendAsync" />
+                <MudButton OnClick="SendAsync" StartIcon="@Icons.Material.Outlined.ConnectWithoutContact" Color="Color.Secondary" ButtonType="ButtonType.Button">Send</MudButton>
+            </MudPaper>
+        </MudPaper>
+    }
 </div>
 
 @code {
@@ -68,6 +80,7 @@
 
     // new message input
     string newMessage = null;
+    DateTime createDateTime = DateTime.Now;
 
     // list of messages in chat
     List<Message> messages = new List<Message>();
@@ -116,14 +129,14 @@
     /// <param name="e"></param>
     void MessageReceived(object sender, MessageReceivedEventArgs e)
     {
-        Console.WriteLine($"Blazor: receive {e.Username}: {e.Message}");
+        Console.WriteLine($"Blazor: receive {e.Username}: {e.Message}: {e.CreateTime}");
         bool isMine = false;
         if (!string.IsNullOrWhiteSpace(e.Username))
         {
             isMine = string.Equals(e.Username, username, StringComparison.CurrentCultureIgnoreCase);
         }
 
-        var newMsg = new Message(e.Username, e.Message, isMine);
+        var newMsg = new Message(e.Username, e.Message, isMine, e.CreateTime);
         messages.Add(newMsg);
 
         // Inform blazor the UI needs updating
@@ -136,7 +149,7 @@
         {
             await client.StopAsync();
             client = null;
-            message = "chat ended";
+            //message = "chat ended";
             chatting = false;
         }
     }
@@ -154,16 +167,17 @@
 
     class Message
     {
-        public Message(string username, string body, bool mine)
+        public Message(string username, string body, bool mine, DateTime createTime)
         {
             Username = username;
             Body = body;
             Mine = mine;
+            CreateTime = createTime;
         }
 
         public string Username { get; set; }
         public string Body { get; set; }
-        //public DateTime CreateTime { get; set; }
+        public DateTime CreateTime { get; set; }
         public bool Mine { get; set; }
 
         /// <summary>

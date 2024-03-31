@@ -35,6 +35,7 @@ namespace Quick.Chat.Server.Areas.Identity.Pages.Account.Manage
         {
             [Phone]
             [Display(Name = "Phone number")]
+            [StringLength(18, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 10)]
             public string PhoneNumber { get; set; }
         }
 
