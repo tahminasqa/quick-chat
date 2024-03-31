@@ -1,0 +1,170 @@
+﻿using Microsoft.AspNetCore.SignalR.Client;
+using Quick.Chat.Shared;
+using System;
+using System.Threading.Tasks;
+
+namespace Quick.Chat.Shared
+{
+    /// <summary>
+    /// Generic client class that interfaces .NET Standard/Blazor with SignalR Javascript client
+    /// </summary>
+    public class AnonymousChatClient : IAsyncDisposable
+    {
+        public const string HUBURL = "/anonymouschat";
+
+        private readonly string _hubUrl;
+        public HubConnection _hubConnection;
+
+        /// <summary>
+        /// Ctor: create a new client for the given hub URL
+        /// </summary>
+        /// <param name="siteUrl">The base URL for the site, e.g. https://localhost:1234 </param>
+        /// <remarks>
+        /// Changed client to accept just the base server URL so any client can use it, including ConsoleApp!
+        /// </remarks>
+        public AnonymousChatClient(string username, string siteUrl)
+        {
+            // check inputs
+            if (string.IsNullOrWhiteSpace(username))
+                throw new ArgumentNullException(nameof(username));
+            if (string.IsNullOrWhiteSpace(siteUrl))
+                throw new ArgumentNullException(nameof(siteUrl));
+            // save username
+            _username = username;
+            // set the hub URL
+            _hubUrl = siteUrl.TrimEnd('/') + HUBURL;
+        }
+
+        /// <summary>
+        /// Name of the chatter
+        /// </summary>
+        private readonly string _username;
+
+        /// <summary>
+        /// Flag to show if started
+        /// </summary>
+        private bool _started = false;
+
+        /// <summary>
+        /// Start the SignalR client 
+        /// </summary>
+        public async Task StartAsync()
+        {
+            if (!_started)
+            {
+                // create the connection using the .NET SignalR client
+                _hubConnection = new HubConnectionBuilder()
+                    .WithUrl(_hubUrl)
+                .Build();
+
+                Console.WriteLine("AnnonymusChatClient: calling Start()");
+
+                // add handler for receiving messages
+                _hubConnection.On<string, string, DateTime>(Messages.RECEIVE, (user, message, createTime) =>
+                {
+                    AnHandleReceiveMessage(user, message, createTime);
+                });
+
+                // start the connection
+                await _hubConnection.StartAsync();
+
+                Console.WriteLine("AnnonymusChatClient: Start returned");
+                _started = true;
+
+                // register user on hub to let other clients know they've joined
+                await _hubConnection.SendAsync(Messages.REGISTER, _username);
+            }
+        }
+
+        /// <summary>
+        /// Handle an inbound message from a hub
+        /// </summary>
+        /// <param name="method">event name</param>
+        /// <param name="message">message content</param>
+        private void AnHandleReceiveMessage(string username, string message, DateTime createTime)
+        {
+            // raise an event to subscribers
+            AnMessageReceived?.Invoke(this, new AnMessageReceivedEventArgs(username, message, createTime));
+        }
+
+        /// <summary>
+        /// Event raised when this client receives a message
+        /// </summary>
+        /// <remarks>
+        /// Instance classes should subscribe to this event
+        /// </remarks>
+        public event AnMessageReceivedEventHandler AnMessageReceived;
+
+        /// <summary>
+        /// Send a message to the hub
+        /// </summary>
+        /// <param name="message">message to send</param>
+        public async Task SendAsync(string message)
+        {
+            // check we are connected
+            if (!_started)
+                throw new InvalidOperationException("Client not started");
+            // send the message
+            await _hubConnection.SendAsync(Messages.SEND, _username, message, DateTime.Now);
+        }
+
+        /// <summary>
+        /// Stop the client (if started)
+        /// </summary>
+        public async Task StopAsync()
+        {
+            if (_started)
+            {
+                // disconnect the client
+                await _hubConnection.StopAsync();
+                // There is a bug in the mono/SignalR client that does not
+                // close connections even after stop/dispose
+                // see https://github.com/mono/mono/issues/18628
+                // this means the demo won't show "xxx left the chat" since 
+                // the connections are left open
+                await _hubConnection.DisposeAsync();
+                _hubConnection = null;
+                _started = false;
+            }
+        }
+
+        public async ValueTask DisposeAsync()
+        {
+            Console.WriteLine("AnnonymusChatClient: Disposing");
+            await StopAsync();
+        }
+    }
+
+    /// <summary>
+    /// Delegate for the message handler
+    /// </summary>
+    /// <param name="sender">the SignalRclient instance</param>
+    /// <param name="e">Event args</param>
+    public delegate void AnMessageReceivedEventHandler(object sender, AnMessageReceivedEventArgs e);
+
+    /// <summary>
+    /// Message received argument class
+    /// </summary>
+    public class AnMessageReceivedEventArgs : EventArgs
+    {
+        public AnMessageReceivedEventArgs(string username, string message, DateTime createTime)
+        {
+            Username = username;
+            Message = message;
+            CreateTime = createTime;
+        }
+
+        /// <summary>
+        /// Name of the message/event
+        /// </summary>
+        public string Username { get; set; }
+
+        /// <summary>
+        /// Message data items
+        /// </summary>
+        public string Message { get; set; }
+
+        public DateTime CreateTime { get; set; }
+
+    }
+}

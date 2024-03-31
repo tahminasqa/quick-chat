@@ -9,7 +9,7 @@ namespace Quick.Chat.Server.Hubs
     /// <summary>
     /// The SignalR hub 
     /// </summary>
-    public class ChatHub : Hub
+    public class AnonymousHub : Hub
     {
         /// <summary>
         /// connectionId-to-username lookup

@@ -165,7 +165,8 @@ namespace Quick.Chat.Server
                 endpoints.MapFallbackToFile("index.html");
                 endpoints.MapHub<SignalRHub>("/signalRHub");
                 // SignalR endpoint routing setup
-                endpoints.MapHub<Hubs.ChatHub>(ChatClient.HUBURL);
+                endpoints.MapHub<Hubs.GroupHub>(ChatClient.HUBURL);
+                endpoints.MapHub<Hubs.AnonymousHub>(AnonymousChatClient.HUBURL);
             });
         }
     }
