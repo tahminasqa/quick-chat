@@ -7,7 +7,7 @@
     @if (chatting)
     {
         <p>You are connected as <b>@username</b></p>
-       <MudButton OnClick="@DisconnectAsync" StartIcon="@Icons.Material.Outlined.Outbond" Color="Color.Secondary" ButtonType="ButtonType.Button">Leave group Chat</MudButton>
+       <MudButton OnClick="@DisconnectAsync" StartIcon="@Icons.Material.Outlined.Outbond" Color="Color.Secondary" ButtonType="ButtonType.Button">Leave Chat</MudButton>
 
     }
 </div>
@@ -25,7 +25,7 @@
         <input type="text" maxlength="32" @bind="@username" />
        @*  <button type="button" @onclick="@Chat"><span class="oi oi-chat" aria-hidden="true"></span> Click here to join the group</button>
         *@
-        <MudButton OnClick="@Chat" StartIcon="@Icons.Material.Outlined.Group" Color="Color.Secondary" ButtonType="ButtonType.Button">Start Anonymous Chat</MudButton>
+        <MudButton OnClick="@Chat" StartIcon="@Icons.Material.Outlined.Chat" Color="Color.Secondary" ButtonType="ButtonType.Button">Start Anonymous Chat</MudButton>
 
         @if (message != null)
         {
@@ -58,7 +58,7 @@
             <MudPaper Elevation="25" Class="d-flex flex-row px-2 mx-4" Style="">
                 <MudTextField T="string" Placeholder="Enter your message..." DisableUnderLine="true" Class="mt-n2 mx-4"
                               @bind-Value="@newMessage" OnKeyDown="SendAsync" />
-                <MudButton OnClick="SendAsync" StartIcon="@Icons.Material.Outlined.ConnectWithoutContact" Color="Color.Secondary" ButtonType="ButtonType.Button">Send</MudButton>
+                <MudButton OnClick="SendAsync" StartIcon="@Icons.Material.Outlined.Chat" Color="Color.Secondary" ButtonType="ButtonType.Button">Send</MudButton>
             </MudPaper>
         </MudPaper>
     }
