@@ -148,7 +148,6 @@
                 Console.WriteLine("Index: chart started?");
                 chatting = true;
 
-                await GetGroupUsersAsync();
             }
             else
             {
@@ -161,6 +160,11 @@
             message = $"ERROR: Failed to start chat client: {e.Message}";
             Console.WriteLine(e.Message);
             Console.WriteLine(e.StackTrace);
+        }
+        finally
+        {
+            if (chatting)
+                await GetGroupUsersAsync();
         }
     }
 

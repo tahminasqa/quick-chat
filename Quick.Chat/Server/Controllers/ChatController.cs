@@ -83,7 +83,7 @@ namespace Quick.Chat.Server.Controllers
         public IActionResult GetGroupUsersAsync()
         {
             this._logger.LogInformation($">> [ChatController][GetGroupUsersAsync]");
-            var allUsers = ApplicationCache.GroupUsers;
+            var allUsers = ApplicationCache.GroupUsers!=null? ApplicationCache.GroupUsers:new System.Collections.Generic.Dictionary<string, string>();
             this._logger.LogInformation($">> [ChatController][GetGroupUsersAsync][Total User Found: {allUsers.Count}]");
             return Ok(allUsers);
         }

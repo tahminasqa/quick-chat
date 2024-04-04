@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Quick.Chat.Shared
+namespace Quick.Chat.Server
 {
     public class ApplicationCache
     {

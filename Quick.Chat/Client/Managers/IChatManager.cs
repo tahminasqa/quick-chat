@@ -15,6 +15,8 @@ namespace Quick.Chat.Client.Managers
 
         Task<SystemStats> NumOfRegisteredUserAsync();
         Task<SystemStats> NumOfMessagesAsync();
+        Task<SystemStats> NumOfGroupMessagesAsync();
+        Task<SystemStats> NumOfGroupAnonymousMessagesAsync();
 
     }
 }

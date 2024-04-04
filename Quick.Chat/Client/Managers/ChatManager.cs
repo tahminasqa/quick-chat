@@ -61,7 +61,7 @@ namespace Quick.Chat.Client.Managers
             return new SystemStats
             {
                 Data = data,
-                Label = "users"
+                Label = "Users Stats"
             };
 
         }
@@ -89,6 +89,61 @@ namespace Quick.Chat.Client.Managers
             {
                 Data = data,
                 Label = "Messages"
+            };
+        }
+        public async Task<SystemStats> NumOfGroupMessagesAsync()
+        {
+            int numOfMessage = 500; //await _httpClient.GetFromJsonAsync<int>("api/serverstats/numberOfMessage");
+
+
+            var data = new List<SystemData>
+            {
+                new SystemData
+                {
+                   NumOfUser = numOfMessage,
+                   Category = "Num Of Message"
+                },
+                new SystemData
+                {
+                   NumOfUser = 5,
+                   Category = "Num Of User"
+                },
+                new SystemData
+                {
+                   NumOfUser = 2,
+                   Category = "Num Of Group"
+                }
+            };
+
+            return new SystemStats
+            {
+                Data = data,
+                Label = "Group Chat Stats"
+            };
+        }
+        public async Task<SystemStats> NumOfGroupAnonymousMessagesAsync()
+        {
+            int numOfMessage = 200; //await _httpClient.GetFromJsonAsync<int>("api/serverstats/numberOfMessage");
+
+
+            var data = new List<SystemData>
+            {
+                new SystemData
+                {
+                   NumOfUser = numOfMessage,
+                   Category = "Num Of Message"
+                },
+                new SystemData
+                {
+                   NumOfUser = 3,
+                   Category = "Num Of User"
+                }
+            };
+
+            return new SystemStats
+            {
+                Data = data,
+                Label = "Anonymous Chat Stats"
             };
         }
     }

@@ -16,6 +16,8 @@
                     <div style="display: flex">
                         <PieChart Colors="@colors" Data="@numberOfRegUser" />
                         <PieChart Colors="@colors" Data="@numberOfMessages" />
+                        <PieChart Colors="@colors" Data="@numberOfGroupChat" />
+                        <PieChart Colors="@colors" Data="@numberOfAnonymousChat" />
                     </div>
                 </div>
             </div>
@@ -24,14 +26,18 @@
 }
 
 @code {
-    private List<string> colors = new List<string>() { "#FBC687", "#F4F7C5" };
+    private List<string> colors = new List<string>() { "#FBC687", "#F4F7C5", "#C0C2BF" };
     private SystemStats numberOfRegUser;
     private SystemStats numberOfMessages;
+    private SystemStats numberOfGroupChat;
+    private SystemStats numberOfAnonymousChat;
 
     protected override async Task OnInitializedAsync()
     {
         numberOfRegUser = await _dataService.NumOfRegisteredUserAsync();
         numberOfMessages = await _dataService.NumOfMessagesAsync();
+        numberOfGroupChat = await _dataService.NumOfGroupMessagesAsync();
+        numberOfAnonymousChat = await _dataService.NumOfGroupAnonymousMessagesAsync();
 
         StateHasChanged();
     }

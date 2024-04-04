@@ -36,12 +36,7 @@ namespace Quick.Chat.Shared
             _hubUrl = siteUrl.TrimEnd('/') + HUBURL;
         }
 
-        public bool IsUserExist(string userName)
-        {
-            if (ApplicationCache.RegisteredUsers != null && ApplicationCache.RegisteredUsers.ContainsKey(userName))
-                return true;
-            return false;
-        }
+      
         /// <summary>
         /// Name of the chatter
         /// </summary>
