@@ -10,12 +10,23 @@
         <div class="card-deck">
             <div class="card">
                 <div class="card-header">
-                    System Stats
+                    User and One to One Message Stats
                 </div>
                 <div class="card-body">
                     <div style="display: flex">
                         <PieChart Colors="@colors" Data="@numberOfRegUser" />
                         <PieChart Colors="@colors" Data="@numberOfMessages" />
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card-deck">
+            <div class="card">
+                <div class="card-header">
+                    Group and Anonymous Message Stats
+                </div>
+                <div class="card-body">
+                    <div style="display: flex">
                         <PieChart Colors="@colors" Data="@numberOfGroupChat" />
                         <PieChart Colors="@colors" Data="@numberOfAnonymousChat" />
                     </div>

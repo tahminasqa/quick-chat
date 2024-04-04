@@ -88,12 +88,12 @@ namespace Quick.Chat.Client.Managers
             return new SystemStats
             {
                 Data = data,
-                Label = "Messages"
+                Label = "One to One Message Stats"
             };
         }
         public async Task<SystemStats> NumOfGroupMessagesAsync()
         {
-            int numOfMessage = 500; //await _httpClient.GetFromJsonAsync<int>("api/serverstats/numberOfMessage");
+            int numOfMessage = 329; //await _httpClient.GetFromJsonAsync<int>("api/serverstats/numberOfMessage");
 
 
             var data = new List<SystemData>
@@ -123,7 +123,7 @@ namespace Quick.Chat.Client.Managers
         }
         public async Task<SystemStats> NumOfGroupAnonymousMessagesAsync()
         {
-            int numOfMessage = 200; //await _httpClient.GetFromJsonAsync<int>("api/serverstats/numberOfMessage");
+            int numOfMessage = 478; //await _httpClient.GetFromJsonAsync<int>("api/serverstats/numberOfMessage");
 
 
             var data = new List<SystemData>
