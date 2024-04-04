@@ -1,6 +1,6 @@
 ﻿@using Quick.Chat.Shared
 
-@page "/groupchat"
+@page "/GroupChat"
 @inject NavigationManager navigationManager
 
 <div class="top-row px-4">
@@ -9,7 +9,7 @@
         <p>You are connected as <b>@username</b></p>
         @* <button class="btn btn-sm btn-warning ml-md-auto" @onclick="@DisconnectAsync">Click here to Disconnect</button> *@
 
-        <MudButton OnClick="@DisconnectAsync" StartIcon="@Icons.Material.Outlined.Outbond" Color="Color.Secondary" ButtonType="ButtonType.Button">Leave group Chat</MudButton>
+        <MudButton OnClick="@DisconnectAsync" StartIcon="@Icons.Material.Outlined.Outbond" Color="Color.Secondary" ButtonType="MudBlazor.ButtonType.Button">Leave group Chat</MudButton>
 
     }
 </div>
@@ -25,9 +25,9 @@
         </p>
 
         <input type="text" maxlength="32" @bind="@username" />
-       @*  <button type="button" @onclick="@Chat"><span class="oi oi-chat" aria-hidden="true"></span> Click here to join the group</button>
-        *@
-        <MudButton OnClick="@Chat" StartIcon="@Icons.Material.Outlined.Group" Color="Color.Secondary" ButtonType="ButtonType.Button">Join the group</MudButton>
+        @*  <button type="button" @onclick="@Chat"><span class="oi oi-chat" aria-hidden="true"></span> Click here to join the group</button>
+    *@
+        <MudButton OnClick="@Chat" StartIcon="@Icons.Material.Outlined.Group" Color="Color.Secondary" ButtonType="MudBlazor.ButtonType.Button">Join the group</MudButton>
 
         @if (message != null)
         {
@@ -36,7 +36,7 @@
         }
     }
 </div>
-<div class="d-flex flex-grow-1 flex-grow-0">
+<div class="d-flex flex-grow-1 flex-grow">
     @if (chatting)
     {
         <MudPaper Elevation="25" Class="py-4 flex-grow-1">
@@ -60,13 +60,42 @@
             <MudPaper Elevation="25" Class="d-flex flex-row px-2 mx-4" Style="">
                 <MudTextField T="string" Placeholder="Enter your message..." DisableUnderLine="true" Class="mt-n2 mx-4"
                               @bind-Value="@newMessage" OnKeyDown="SendAsync" />
-                <MudButton OnClick="SendAsync" StartIcon="@Icons.Material.Outlined.ConnectWithoutContact" Color="Color.Secondary" ButtonType="ButtonType.Button">Send</MudButton>
+                <MudButton OnClick="SendAsync" StartIcon="@Icons.Material.Outlined.ConnectWithoutContact" Color="Color.Secondary" ButtonType="MudBlazor.ButtonType.Button">Send</MudButton>
             </MudPaper>
+        </MudPaper>
+        <MudPaper Elevation="25" Class="pa-3 ml-6" MinWidth="350px">
+            <MudToolBar Dense="true">
+                <MudText Typo="Typo.h6" Inline="true" Class="mr-2"></MudText>
+                <MudText Typo="Typo.h6">Group Users</MudText>
+            </MudToolBar>
+            <div class="d-flex flex-column px-4" style="max-height:70vh;min-height:70vh; overflow:scroll;">
+                <MudList Clickable="true">
+                    @foreach (var user in GroupUsers)
+                    {
+                        <MudListItem Class="pa-0 px-2">
+                            <div class="d-flex flex-row mt-n1 mb-n1">
+                                <div class="mr-4">
+                                    <MudBadge Class="my-2">
+
+                                        <MudAvatar Color="Color.Secondary" Style="height:50px; width:50px;">@user.Key.ToUpper().FirstOrDefault()</MudAvatar>
+
+                                    </MudBadge>
+                                </div>
+                                <div>
+                                    <MudText Typo="Typo.body2" Class="mt-3 mb-n2">@user.Key</MudText>
+                                </div>
+                            </div>
+                        </MudListItem>
+                    }
+                </MudList>
+            </div>
         </MudPaper>
     }
 </div>
 
 @code {
+
+
     // flag to indicate chat status
     bool chatting = false;
 
@@ -102,17 +131,30 @@
             // remove old messages if any
             messages.Clear();
 
+
             // Create the chat client
             string baseUrl = navigationManager.BaseUri;
             client = new ChatClient(username, baseUrl);
-            // add an event handler for incoming messages
-            client.MessageReceived += MessageReceived;
-            // start the client
-            Console.WriteLine("Index: chart starting... baseurl: " + baseUrl);
-            await client.StartAsync();
-            Console.WriteLine("Index: chart started?");
 
-            chatting = true;
+            var users = await GetAllUsersAsync();
+            if (users.ContainsKey(username))
+            {
+
+                // add an event handler for incoming messages
+                client.MessageReceived += MessageReceived;
+                // start the client
+                Console.WriteLine("Index: chart starting... baseurl: " + baseUrl);
+                await client.StartAsync();
+                Console.WriteLine("Index: chart started?");
+                chatting = true;
+
+                await GetGroupUsersAsync();
+            }
+            else
+            {
+                message = "Please enter a registered user name";
+                return;
+            }
         }
         catch (Exception e)
         {

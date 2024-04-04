@@ -1,0 +1,36 @@
+﻿@using Quick.Chat.Client;
+@using Radzen;
+@using Radzen.Blazor;
+
+<div>
+    <div style="margin-top: 15px; margin-right: 90px; text-align: center;"><b>@Data.Label</b></div>
+    <RadzenChart>
+        <RadzenPieSeries Fills="@Colors"
+                         Data="@Data.Data.ToList()"
+                         Title="@Data.Label"
+                         CategoryProperty="Category"
+                         ValueProperty="NumOfUser" />
+    </RadzenChart>
+</div>
+
+@* <div class="card">
+    <div class="card-header">Pie Chart</div>
+    <div class="card-body">
+        <h5 class="card-title">By Channels</h5>
+        <PieChart InputData="@Data.Data.ToArray().ToString()"
+                  InputLabels="@Data.Label">
+        </PieChart>
+        <a href="#" class="btn btn-primary">Details</a>
+    </div>
+</div> *@
+
+@code {
+    [Parameter]
+    public ICollection<string> Colors { get; set; }
+
+    [Parameter]
+    public SystemStats Data { get; set; }
+
+    [Parameter]
+    public string Label { get; set; }
+}

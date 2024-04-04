@@ -17,6 +17,8 @@ namespace Quick.Chat.Client.Pages
         [Parameter] public string CurrentUserId { get; set; }
         [Parameter] public string CurrentUserEmail { get; set; }
         private List<ChatMessage> messages = new List<ChatMessage>();
+
+
         private async Task SubmitAsync()
         {
             if (!string.IsNullOrEmpty(CurrentMessage) && !string.IsNullOrEmpty(ContactId))
@@ -81,6 +83,7 @@ namespace Quick.Chat.Client.Pages
             }
         }
         public List<ApplicationUser> ChatUsers = new List<ApplicationUser>();
+        
         [Parameter] public string ContactEmail { get; set; }
         [Parameter] public string ContactName { get; set; }
         [Parameter] public string ContactId { get; set; }
@@ -99,5 +102,7 @@ namespace Quick.Chat.Client.Pages
         {
             ChatUsers = await _chatManager.GetUsersAsync();
         }
+
+      
     }
 }

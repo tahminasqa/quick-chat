@@ -15,6 +15,7 @@ namespace Quick.Chat.Shared
         private readonly string _hubUrl;
         public HubConnection _hubConnection;
 
+
         /// <summary>
         /// Ctor: create a new client for the given hub URL
         /// </summary>
@@ -35,6 +36,12 @@ namespace Quick.Chat.Shared
             _hubUrl = siteUrl.TrimEnd('/') + HUBURL;
         }
 
+        public bool IsUserExist(string userName)
+        {
+            if (ApplicationCache.RegisteredUsers != null && ApplicationCache.RegisteredUsers.ContainsKey(userName))
+                return true;
+            return false;
+        }
         /// <summary>
         /// Name of the chatter
         /// </summary>

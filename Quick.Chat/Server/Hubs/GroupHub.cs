@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using System;
 using Quick.Chat.Shared;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace Quick.Chat.Server.Hubs
 {
@@ -42,6 +43,10 @@ namespace Quick.Chat.Server.Hubs
             {
                 // maintain a lookup of connectionId-to-username
                 userLookup.Add(currentId, username);
+                if (ApplicationCache.GroupUsers == null) 
+                    ApplicationCache.GroupUsers = new Dictionary<string, string>();
+
+                ApplicationCache.GroupUsers.Add(username, username);
                 // re-use existing message for now
                 await Clients.AllExcept(currentId).SendAsync(
                     Messages.RECEIVE,
