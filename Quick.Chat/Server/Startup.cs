@@ -21,6 +21,7 @@ using Quick.Chat.Server.Areas.Identity;
 using Microsoft.AspNetCore.DataProtection;
 using System.IO;
 using System.Security.Cryptography.X509Certificates;
+using Microsoft.AspNetCore.SignalR;
 
 namespace Quick.Chat.Server
 {
@@ -53,7 +54,7 @@ namespace Quick.Chat.Server
             sb.AppendLine();
             sb.AppendLine("******************************************************");
             sb.AppendLine("**                  QuickChat                      **");
-            sb.AppendLine("**              [Version 1.0.8.1]                  **");
+            sb.AppendLine("**               [Version 2.0.0]                   **");
             sb.AppendLine("**     ©2024 QuickChat. All rights reserved        **");
             sb.AppendLine("******************************************************");
 
@@ -163,6 +164,9 @@ namespace Quick.Chat.Server
                 endpoints.MapControllers();
                 endpoints.MapFallbackToFile("index.html");
                 endpoints.MapHub<SignalRHub>("/signalRHub");
+                // SignalR endpoint routing setup
+                endpoints.MapHub<Hubs.GroupHub>(ChatClient.HUBURL);
+                endpoints.MapHub<Hubs.AnonymousHub>(AnonymousChatClient.HUBURL);
             });
         }
     }

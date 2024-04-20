@@ -1,0 +1,241 @@
+﻿@using Quick.Chat.Shared
+
+@page "/GroupChat"
+@inject NavigationManager navigationManager
+
+<div class="top-row px-4">
+    @if (chatting)
+    {
+        <p>You are connected as <b>@username</b></p>
+        @* <button class="btn btn-sm btn-warning ml-md-auto" @onclick="@DisconnectAsync">Click here to Disconnect</button> *@
+
+        <MudButton OnClick="@DisconnectAsync" StartIcon="@Icons.Material.Outlined.Outbond" Color="Color.Secondary" ButtonType="MudBlazor.ButtonType.Button">Leave group Chat</MudButton>
+
+    }
+</div>
+
+<div class="content px-4">
+
+    <h1>Group Chat </h1>
+
+    @if (!chatting)
+    {
+        <p>
+            Enter your name to start chatting:
+        </p>
+
+        <input type="text" maxlength="32" @bind="@username" />
+        @*  <button type="button" @onclick="@Chat"><span class="oi oi-chat" aria-hidden="true"></span> Click here to join the group</button>
+    *@
+        <MudButton OnClick="@Chat" StartIcon="@Icons.Material.Outlined.Group" Color="Color.Secondary" ButtonType="MudBlazor.ButtonType.Button">Join the group</MudButton>
+
+        @if (message != null)
+        {
+            <div class="invalid-feedback">@message</div>
+            <small id="emailHelp" class="form-text text-muted">@message</small>
+        }
+    }
+</div>
+<div class="d-flex flex-grow-1 flex-grow">
+    @if (chatting)
+    {
+        <MudPaper Elevation="25" Class="py-4 flex-grow-1">
+
+            <div class="d-flex flex-column px-4" style="max-height:65vh;min-height:65vh; overflow:scroll;" id="chatContainer">
+                @foreach (var message in messages)
+                {
+                    <div class="d-flex flex-row my-4">
+                        <div class="mr-4">
+                            <MudAvatar Color="Color.Secondary" Style="height:50px; width:50px;">@message.Username.ToUpper().FirstOrDefault()</MudAvatar>
+                        </div>
+                        <div>
+                            <MudText Typo="Typo.body1">@message.Username</MudText>
+                            <MudText Typo="Typo.caption" Style="font-size: xx-small!important;">@message.CreateTime.ToString("dd MMM, yyyy hh:mm tt")</MudText>
+                            <MudText Typo="Typo.body2" Style=" padding: 15px;background-color: var(--mud-palette-background-grey);border-radius: 5px;margin-top:5px">@message.Body</MudText>
+                        </div>
+                    </div>
+                }
+            </div>
+
+            <MudPaper Elevation="25" Class="d-flex flex-row px-2 mx-4" Style="">
+                <MudTextField T="string" Placeholder="Enter your message..." DisableUnderLine="true" Class="mt-n2 mx-4"
+                              @bind-Value="@newMessage" OnKeyDown="SendAsync" />
+                <MudButton OnClick="SendAsync" StartIcon="@Icons.Material.Outlined.ConnectWithoutContact" Color="Color.Secondary" ButtonType="MudBlazor.ButtonType.Button">Send</MudButton>
+            </MudPaper>
+        </MudPaper>
+        <MudPaper Elevation="25" Class="pa-3 ml-6" MinWidth="350px">
+            <MudToolBar Dense="true">
+                <MudText Typo="Typo.h6" Inline="true" Class="mr-2"></MudText>
+                <MudText Typo="Typo.h6">Group Users</MudText>
+            </MudToolBar>
+            <div class="d-flex flex-column px-4" style="max-height:70vh;min-height:70vh; overflow:scroll;">
+                <MudList Clickable="true">
+                    @foreach (var user in GroupUsers)
+                    {
+                        <MudListItem Class="pa-0 px-2">
+                            <div class="d-flex flex-row mt-n1 mb-n1">
+                                <div class="mr-4">
+                                    <MudBadge Class="my-2">
+
+                                        <MudAvatar Color="Color.Secondary" Style="height:50px; width:50px;">@user.Key.ToUpper().FirstOrDefault()</MudAvatar>
+
+                                    </MudBadge>
+                                </div>
+                                <div>
+                                    <MudText Typo="Typo.body2" Class="mt-3 mb-n2">@user.Key</MudText>
+                                </div>
+                            </div>
+                        </MudListItem>
+                    }
+                </MudList>
+            </div>
+        </MudPaper>
+    }
+</div>
+
+@code {
+
+
+    // flag to indicate chat status
+    bool chatting = false;
+
+    // name of the user who will be chatting
+    string username = null;
+
+    ChatClient client = null;
+
+    // on-screen message
+    string message = null;
+
+    // new message input
+    string newMessage = null;
+    DateTime createDateTime = DateTime.Now;
+
+    // list of messages in chat
+    List<Message> messages = new List<Message>();
+
+    /// <summary>
+    /// Start chat client
+    /// </summary>
+    async Task Chat()
+    {
+        // check username is valid
+        if (string.IsNullOrWhiteSpace(username))
+        {
+            message = "Please enter a name";
+            return;
+        };
+
+        try
+        {
+            // remove old messages if any
+            messages.Clear();
+
+
+            // Create the chat client
+            string baseUrl = navigationManager.BaseUri;
+            client = new ChatClient(username, baseUrl);
+
+            var users = await GetAllUsersAsync();
+            if (users.ContainsKey(username))
+            {
+
+                // add an event handler for incoming messages
+                client.MessageReceived += MessageReceived;
+                // start the client
+                Console.WriteLine("Index: chart starting... baseurl: " + baseUrl);
+                await client.StartAsync();
+                Console.WriteLine("Index: chart started?");
+                chatting = true;
+
+            }
+            else
+            {
+                message = "Please enter a registered user name";
+                return;
+            }
+        }
+        catch (Exception e)
+        {
+            message = $"ERROR: Failed to start chat client: {e.Message}";
+            Console.WriteLine(e.Message);
+            Console.WriteLine(e.StackTrace);
+        }
+        finally
+        {
+            if (chatting)
+                await GetGroupUsersAsync();
+        }
+    }
+
+    /// <summary>
+    /// Inbound message
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
+    void MessageReceived(object sender, MessageReceivedEventArgs e)
+    {
+        Console.WriteLine($"Blazor: receive {e.Username}: {e.Message}: {e.CreateTime}");
+        bool isMine = false;
+        if (!string.IsNullOrWhiteSpace(e.Username))
+        {
+            isMine = string.Equals(e.Username, username, StringComparison.CurrentCultureIgnoreCase);
+        }
+
+        var newMsg = new Message(e.Username, e.Message, isMine, e.CreateTime);
+        messages.Add(newMsg);
+
+        // Inform blazor the UI needs updating
+        StateHasChanged();
+    }
+
+    async Task DisconnectAsync()
+    {
+        if (chatting)
+        {
+            await client.StopAsync();
+            client = null;
+            //message = "chat ended";
+            chatting = false;
+        }
+    }
+
+    async Task SendAsync()
+    {
+        if (chatting && !string.IsNullOrWhiteSpace(newMessage))
+        {
+            // send message to hub
+            await client.SendAsync(newMessage);
+            // clear input box
+            newMessage = "";
+        }
+    }
+
+    class Message
+    {
+        public Message(string username, string body, bool mine, DateTime createTime)
+        {
+            Username = username;
+            Body = body;
+            Mine = mine;
+            CreateTime = createTime;
+        }
+
+        public string Username { get; set; }
+        public string Body { get; set; }
+        public DateTime CreateTime { get; set; }
+        public bool Mine { get; set; }
+
+        /// <summary>
+        /// Determine CSS classes to use for message div
+        /// </summary>
+        public string CSS
+        {
+            get
+            {
+                return Mine ? "sent" : "received";
+            }
+        }
+    }
+
+}

@@ -1,0 +1,56 @@
+﻿@page "/dashboard"
+@using System.Globalization;
+@using Quick.Chat.Client.Components
+@inject IChatManager _dataService;
+
+@if (numberOfMessages != null && numberOfMessages.Data != null
+&& numberOfRegUser != null && numberOfRegUser.Data != null)
+{
+    <div class="container-fluid">
+        <div class="card-deck">
+            <div class="card">
+                <div class="card-header">
+                    User and One to One Message Stats
+                </div>
+                <div class="card-body">
+                    <div style="display: flex">
+                        <PieChart Colors="@colors" Data="@numberOfRegUser" />
+                        <PieChart Colors="@colors" Data="@numberOfMessages" />
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card-deck">
+            <div class="card">
+                <div class="card-header">
+                    Group and Anonymous Message Stats
+                </div>
+                <div class="card-body">
+                    <div style="display: flex">
+                        <PieChart Colors="@colors" Data="@numberOfGroupChat" />
+                        <PieChart Colors="@colors" Data="@numberOfAnonymousChat" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    private List<string> colors = new List<string>() { "#FBC687", "#F4F7C5", "#C0C2BF" };
+    private SystemStats numberOfRegUser;
+    private SystemStats numberOfMessages;
+    private SystemStats numberOfGroupChat;
+    private SystemStats numberOfAnonymousChat;
+
+    protected override async Task OnInitializedAsync()
+    {
+        numberOfRegUser = await _dataService.NumOfRegisteredUserAsync();
+        numberOfMessages = await _dataService.NumOfMessagesAsync();
+        numberOfGroupChat = await _dataService.NumOfGroupMessagesAsync();
+        numberOfAnonymousChat = await _dataService.NumOfGroupAnonymousMessagesAsync();
+
+        StateHasChanged();
+    }
+
+}

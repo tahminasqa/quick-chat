@@ -14,6 +14,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
+using System.Text.RegularExpressions;
 
 namespace Quick.Chat.Server.Areas.Identity.Pages.Account
 {
@@ -53,7 +54,8 @@ namespace Quick.Chat.Server.Areas.Identity.Pages.Account
             public string UserName { get; set; }
 
             [Required]
-            [EmailAddress]
+            [DataType(DataType.EmailAddress)]
+            //[RegularExpression(@"^[a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$")]
             [Display(Name = "Email")]
             public string Email { get; set; }
 
@@ -68,7 +70,13 @@ namespace Quick.Chat.Server.Areas.Identity.Pages.Account
             [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
             public string ConfirmPassword { get; set; }
         }
+        public bool ValidateUsingRegex(string emailAddress)
+        {
+            var pattern = @"^[a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$";
 
+            var regex = new Regex(pattern);
+            return regex.IsMatch(emailAddress);
+        }
         public async Task OnGetAsync(string returnUrl = null)
         {
             ReturnUrl = returnUrl;

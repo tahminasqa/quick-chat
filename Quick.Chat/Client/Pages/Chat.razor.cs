@@ -17,6 +17,8 @@ namespace Quick.Chat.Client.Pages
         [Parameter] public string CurrentUserId { get; set; }
         [Parameter] public string CurrentUserEmail { get; set; }
         private List<ChatMessage> messages = new List<ChatMessage>();
+
+
         private async Task SubmitAsync()
         {
             if (!string.IsNullOrEmpty(CurrentMessage) && !string.IsNullOrEmpty(ContactId))
@@ -41,6 +43,8 @@ namespace Quick.Chat.Client.Pages
         }
         protected override async Task OnInitializedAsync()
         {
+            Console.WriteLine($">> OnInitializedAsync:: Message CurrentuserId: {CurrentUserId}");
+
             if (hubConnection == null)
             {
                 hubConnection = new HubConnectionBuilder().WithUrl(_navigationManager.ToAbsoluteUri("/signalRHub")).Build();
@@ -51,6 +55,7 @@ namespace Quick.Chat.Client.Pages
             }
             hubConnection.On<ChatMessage, string>("ReceiveMessage", async (message, userName) =>
             {
+                Console.WriteLine($">> OnInitializedAsync:: Message To User id: {message.ToUserId}, FromUserId: {message.FromUserId}, CurrentuserId: {CurrentUserId}");
                 if ((ContactId == message.ToUserId && CurrentUserId == message.FromUserId) || (ContactId == message.FromUserId && CurrentUserId == message.ToUserId))
                 {
 
@@ -78,13 +83,17 @@ namespace Quick.Chat.Client.Pages
             }
         }
         public List<ApplicationUser> ChatUsers = new List<ApplicationUser>();
+        
         [Parameter] public string ContactEmail { get; set; }
+        [Parameter] public string ContactName { get; set; }
         [Parameter] public string ContactId { get; set; }
         async Task LoadUserChat(string userId)
         {
             var contact = await _chatManager.GetUserDetailsAsync(userId);
             ContactId = contact.Id;
+            Console.WriteLine($">> LoadUserChat: ContactId: {ContactId}");
             ContactEmail = contact.Email;
+            ContactName = contact.UserName;
             _navigationManager.NavigateTo($"chat/{ContactId}");
             messages = new List<ChatMessage>();
             messages = await _chatManager.GetConversationAsync(ContactId);
@@ -93,5 +102,7 @@ namespace Quick.Chat.Client.Pages
         {
             ChatUsers = await _chatManager.GetUsersAsync();
         }
+
+      
     }
 }

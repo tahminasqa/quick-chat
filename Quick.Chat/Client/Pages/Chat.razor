@@ -1,4 +1,6 @@
-﻿@page "/chat/{ContactId}"
+﻿@using Quick.Chat.Shared
+﻿
+@page "/chat/{ContactId}"
 @page "/chat"
 <div class="d-flex flex-grow-1 flex-row">
     <MudPaper Elevation="25" Class="py-4 flex-grow-1">
@@ -31,8 +33,8 @@
         </div>
         <MudPaper Elevation="25" Class="d-flex flex-row px-2 mx-4" Style="">
             <MudTextField T="string" Placeholder="Enter your message..."DisableUnderLine="true" Class="mt-n2 mx-4"
-                          @bind-Value="CurrentMessage" For="@(()=> CurrentMessage)" />
-            <MudButton OnClick="SubmitAsync" StartIcon="@Icons.Material.Outlined.Send" Color="Color.Secondary" ButtonType="ButtonType.Button">Send</MudButton>
+                          @bind-Value="CurrentMessage" For="@(()=> CurrentMessage)" OnKeyDown="SubmitAsync" />
+            <MudButton OnClick="SubmitAsync" StartIcon="@Icons.Material.Outlined.Chat" Color="Color.Secondary" ButtonType="MudBlazor.ButtonType.Button">Send</MudButton>
         </MudPaper>
     </MudPaper>
         <MudPaper Elevation="25" Class="pa-3 ml-6" MinWidth="350px">

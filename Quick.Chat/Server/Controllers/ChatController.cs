@@ -10,6 +10,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using Quick.Chat.Server.Hubs;
 
 namespace Quick.Chat.Server.Controllers
 {
@@ -59,6 +60,31 @@ namespace Quick.Chat.Server.Controllers
             var userId = User.Claims.Where(a => a.Type == ClaimTypes.NameIdentifier).Select(a => a.Value).FirstOrDefault();
             var allUsers = await _context.Users.Where(user => user.Id != userId).ToListAsync();
             this._logger.LogInformation($">> [ChatController][GetUsersAsync][Total User Found: {allUsers.Count}]");
+
+
+            return Ok(allUsers);
+        }
+        [HttpGet("allusers")]
+        public async Task<IActionResult> GetAllUsersAsync()
+        {
+            this._logger.LogInformation($">> [ChatController][GetAllUsersAsync]");
+
+            //Reset
+            ApplicationCache.RegisteredUsers = new System.Collections.Generic.Dictionary<string, string>();
+            var registeredUsers = await _context.Users.ToListAsync();
+            foreach (var user in registeredUsers)
+            {
+                ApplicationCache.RegisteredUsers.Add(user.UserName, user.UserName);
+            }
+
+            return Ok(ApplicationCache.RegisteredUsers);
+        }
+        [HttpGet("groupusers")]
+        public IActionResult GetGroupUsersAsync()
+        {
+            this._logger.LogInformation($">> [ChatController][GetGroupUsersAsync]");
+            var allUsers = ApplicationCache.GroupUsers!=null? ApplicationCache.GroupUsers:new System.Collections.Generic.Dictionary<string, string>();
+            this._logger.LogInformation($">> [ChatController][GetGroupUsersAsync][Total User Found: {allUsers.Count}]");
             return Ok(allUsers);
         }
         [HttpGet("users/{userId}")]
