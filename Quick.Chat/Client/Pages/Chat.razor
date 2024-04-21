@@ -1,7 +1,33 @@
 ﻿@using Quick.Chat.Shared
-﻿
+@using Quick.Chat.Emoji
+
 @page "/chat/{ContactId}"
 @page "/chat"
+<style>
+    .resizedImg {
+        height: 200px;
+        background-color: #ccc;
+        border-style: solid;
+        border-width: 1px;
+        border-color: #ccc;
+        /* border-radius */
+        -webkit-border-radius: 5px;
+        -moz-border-radius: 5px;
+        border-radius: 5px;
+        /* box-shadow */
+        -webkit-box-shadow: rgba(0,0,0,0.8) 0px 0 3px;
+        -moz-box-shadow: rgba(0,0,0,0.8) 0 0 3px;
+        box-shadow: rgba(0,0,0,0.8) 0 0 3px;
+        cursor: pointer;
+        transition: opacity 1s;
+    }
+
+        .resizedImg:hover {
+            opacity: 0.5;
+        }
+</style>
+
+
 <div class="d-flex flex-grow-1 flex-row">
     <MudPaper Elevation="25" Class="py-4 flex-grow-1">
         <MudToolBar Dense="true">
@@ -32,42 +58,51 @@
             }
         </div>
         <MudPaper Elevation="25" Class="d-flex flex-row px-2 mx-4" Style="">
-            <MudTextField T="string" Placeholder="Enter your message..."DisableUnderLine="true" Class="mt-n2 mx-4"
+            <MudTextField T="string" Placeholder="Enter your message..." DisableUnderLine="true" Class="mt-n2 mx-4"
                           @bind-Value="CurrentMessage" For="@(()=> CurrentMessage)" OnKeyDown="SubmitAsync" />
+
+
             <MudButton OnClick="SubmitAsync" StartIcon="@Icons.Material.Outlined.Chat" Color="Color.Secondary" ButtonType="MudBlazor.ButtonType.Button">Send</MudButton>
         </MudPaper>
     </MudPaper>
-        <MudPaper Elevation="25" Class="pa-3 ml-6" MinWidth="350px">
-            <MudToolBar Dense="true">
-                <MudText Typo="Typo.h6" Inline="true" Class="mr-2">#</MudText>
-                <MudText Typo="Typo.h6">Online Users</MudText>
-            </MudToolBar>
-            <div class="d-flex flex-column px-4" style="max-height:70vh;min-height:70vh; overflow:scroll;">
-                <MudList Clickable="true">
-                    @foreach (var user in ChatUsers)
-                    {
-                        <MudListItem Class="pa-0 px-2" OnClick="@(() => LoadUserChat(user.Id))">
-                            <div class="d-flex flex-row mt-n1 mb-n1">
-                                <div class="mr-4">
-                                    <MudBadge Class="my-2">
-                                        @if (user.Id == ContactId)
-                                        {
-                                            <MudAvatar Color="Color.Secondary" Style="height:50px; width:50px;">@user.UserName.ToUpper().FirstOrDefault()</MudAvatar>
-                                        }
-                                        else
-                                        {
-                                            <MudAvatar Color="Color.Dark" Style="height:50px; width:50px;">@user.UserName.ToUpper().FirstOrDefault()</MudAvatar>
-                                        }
-                                    </MudBadge>
-                                </div>
-                                <div>
-                                    <MudText Typo="Typo.body2" Class="mt-3 mb-n2">@user.UserName</MudText>
-                                    <MudText Typo="Typo.caption" Style="font-size: xx-small!important;">@user.Email</MudText>
-                                </div>
+    <MudPaper Elevation="25" Class="pa-3 ml-6" MinWidth="350px">
+        <MudToolBar Dense="true">
+            <MudText Typo="Typo.h6" Inline="true" Class="mr-2">#</MudText>
+            <MudText Typo="Typo.h6">Online Users</MudText>
+        </MudToolBar>
+        <div class="d-flex flex-column px-4" style="max-height:70vh;min-height:70vh; overflow:scroll;">
+            <MudList Clickable="true">
+                @foreach (var user in ChatUsers)
+                {
+                    <MudListItem Class="pa-0 px-2" OnClick="@(() => LoadUserChat(user.Id))">
+                        <div class="d-flex flex-row mt-n1 mb-n1">
+                            <div class="mr-4">
+                                <MudBadge Class="my-2">
+                                    @if (user.Id == ContactId)
+                                    {
+                                        <MudAvatar Color="Color.Secondary" Style="height:50px; width:50px;">@user.UserName.ToUpper().FirstOrDefault()</MudAvatar>
+                                    }
+                                    else
+                                    {
+                                        <MudAvatar Color="Color.Dark" Style="height:50px; width:50px;">@user.UserName.ToUpper().FirstOrDefault()</MudAvatar>
+                                    }
+                                </MudBadge>
                             </div>
-                        </MudListItem>
-                    }
-                </MudList>
-            </div>
-        </MudPaper>
+                            <div>
+                                <MudText Typo="Typo.body2" Class="mt-3 mb-n2">@user.UserName</MudText>
+                                <MudText Typo="Typo.caption" Style="font-size: xx-small!important;">@user.Email</MudText>
+                            </div>
+                        </div>
+                    </MudListItem>
+                }
+            </MudList>
+        </div>
+    </MudPaper>
 </div>
+
+@code {
+    private List<string> CustomSymbols = new List<string>()
+    {
+        "🙂", "😀", "👍", "👏", "🤪"
+    };
+}

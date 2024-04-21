@@ -24,6 +24,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\Quick.Chat.Emoji\Quick.Chat.Emoji.csproj" />
     <ProjectReference Include="..\Shared\Quick.Chat.Shared.csproj" />
   </ItemGroup>
 

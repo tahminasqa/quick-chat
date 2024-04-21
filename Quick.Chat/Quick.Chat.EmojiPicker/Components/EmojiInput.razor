@@ -1,0 +1,237 @@
+﻿@namespace Quick.Chat.EmojiPicker
+@using Quick.Chat.EmojiPicker.Sub
+@using Markdig
+@using System.Threading 
+
+<style>
+    .messagePreviewContainer {
+        background-color: #eee;
+        padding: 10px;
+        border-radius: 15px;
+    }
+
+    /* Popover styling */
+    .popover__wrapper {
+        position: relative;
+        display: inline-block;
+    }
+
+    .popover__content {
+        opacity: 0;
+        visibility: hidden;
+        position: absolute;
+        left: -150px;
+        transform: translate(0px, -10px);
+        transition-delay: 0.5s;
+        background-color: #F8F8F8;
+        padding: 1.5rem;
+        box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.26);
+        width: auto;
+    }
+
+        .popover__content:before {
+            position: absolute;
+            z-index: -1;
+            content: "";
+            right: calc(50% - 10px);
+            top: -8px;
+            border-style: solid;
+            border-width: 0 10px 10px 10px;
+            border-color: transparent transparent #F8F8F8 transparent;
+            transition-duration: 0.3s;
+            transition-property: transform;
+        }
+
+    .popover__wrapper:hover .popover__content {
+        z-index: 10;
+        opacity: 1;
+        visibility: visible;
+        transform: translate(0px, 10px);
+        transition: all 0.5s cubic-bezier(0.75, -0.02, 0.2, 0.97);
+    }
+</style>
+
+
+
+<div class="input-group mb-3" style="@StyleTextInputContainer">
+    @if (AddonPrepend != null)
+    {
+        <div class="input-group-prepend">
+            <span class="input-group-text" id="addon-msg">@AddonPrepend</span>
+        </div>
+    }
+    <input type="text" class="form-control" style="@StyleTextInput" placeholder="@Placeholder" aria-label="@Placeholder"
+           aria-describedby="button-emojipicker" @bind="Message" @bind:event="oninput" autocomplete="@AutoComplete"
+           @onkeyup="@(() => this.PreviewMessageUpdated(Message))"
+           @onfocus="@(() => this.setInputFocused(true))" @onblur="@(() => this.setInputFocused(false))">
+
+    @if (ShowFilePicker)
+    {
+        <div class="input-group-append" style="@StyleFileBtnContainer">
+            <button class="btn btn-outline-secondary" style="@StyleFileBtn" type="button" @onclick="() => IsFilePickerCollapsed ^= true">@FileBtnIcon</button>
+        </div>
+    }
+
+    <div class="input-group-append popover__wrapper" style="@StyleEmojiBtnContainer">
+        <button class="btn btn-outline-secondary" style="@StyleEmojiBtn" type="button" id="button-emojipicker">@SmileyBtnIcon</button>
+        <div class="popover__content" style="@StyleEmojiPopoverContainer">
+            <EmojiPanelContainer AddEmoji="@AddEmoji" ClassEmojiTabBtnActive="@ClassEmojiTabBtnActive" ClassEmojiTabBtnInActive="@ClassEmojiTabBtnInActive"
+                                 EmojiList="@AllEmojies" />
+        </div>
+    </div>
+    @if (ShowClearBtn)
+    {
+        <div class="input-group-append" style="@StyleBtnClearContainer">
+            <button type="reset" class="btn btn-outline-info text-center" style="@StyleBtnClear" @onclick="() => this.Message=string.Empty">@ClearBtnLbl</button>
+        </div>
+    }
+
+    @if (ShowSubmit)
+    {
+        <div class="input-group-append" style="@StyleBtnSubmitContainer">
+            <button type="submit" class="btn btn-outline-info text-center" style="@StyleBtnSubmit" disabled="@IsSubmitDisabled">@SubmitBtnLbl</button>
+        </div>
+    }
+
+</div>
+
+<div style="@StyleDropzone @(IsFilePickerCollapsed ? "display:none;" : "")">
+    <FileUploader AddFiles="AddFiles" FileUploadRoute="@FileUploadRoute" CancellationToken="@CancellationToken" />
+</div>
+
+@if (ShowPreview && _isInputFocused && PreviewMessage != null)
+{
+    <div class="messagePreviewContainer" style="@StylePreviewContainer">
+       @((MarkupString) this.PreviewMessage)
+    </div>
+}
+
+
+@code {
+    #region fields
+    private string _message;
+    private bool _isInputFocused = false;
+    #endregion
+
+    #region properties
+    // Message used by preview container
+    private string PreviewMessage { get; set; }
+
+    [Parameter] public string StylePreviewContainer { get; set; } = "";
+    [Parameter] public string StyleTextInputContainer { get; set; } = "";
+    [Parameter] public string StyleTextInput { get; set; } = "";
+    [Parameter] public string StyleFileBtnContainer { get; set; } = "";
+    [Parameter] public string StyleFileBtn { get; set; } = "";
+    [Parameter] public string StyleDropzone { get; set; } = "";
+    [Parameter] public string StyleEmojiBtnContainer { get; set; } = "";
+    [Parameter] public string StyleEmojiBtn { get; set; } = "";
+    [Parameter] public string StyleEmojiPopoverContainer { get; set; } = "";
+    [Parameter] public string StyleBtnClearContainer { get; set; } = "";
+    [Parameter] public string StyleBtnClear { get; set; } = "";
+    [Parameter] public string StyleBtnSubmitContainer { get; set; } = "";
+    [Parameter] public string StyleBtnSubmit { get; set; } = "";
+
+    /// <summary>Display clear button</summary>
+    [Parameter] public bool ShowClearBtn { get; set; } = true;
+
+    /// <summary>Reset/Clear Button label. Only takes effect when ShowClearBtn is true.</summary>
+    [Parameter] public string ClearBtnLbl { get; set; } = "Clear"; // NEW
+
+    /// <summary>Enable message preview. Useful for HTML/Markdown preview.</summary>
+    [Parameter] public bool ShowPreview { get; set; } = true;
+
+    /// <summary>Defines the css-classes for the tab button within the emoji panel (state: active)</summary>
+    [Parameter] public string ClassEmojiTabBtnActive { get; set; } = "btn-dark";
+
+    /// <summary>Defines the css-classes for the tab button within the emoji panel (state: inactive)</summary>
+    [Parameter] public string ClassEmojiTabBtnInActive { get; set; } = "btn-light";
+
+    /// <summary>Add custom symbols/emojies to this list to create a new tab at the end of the emoji picker.</summary>
+    [Parameter] public List<string> CustomSymbols { get; set; }
+
+    /// <summary>Web-Url the uploaded files will be sent to.</summary>
+    [Parameter] public string FileUploadRoute { get; set; } = "/";
+
+    /// <summary>Optional cancellation token for file upload route.</summary>
+    [Parameter] public CancellationToken CancellationToken { get; set; }
+
+    /// <summary>Text-input value. Mainly used to bind internal value.</summary>
+    [Parameter]
+    public string Message
+    {
+        get => _message;
+        set
+        {
+            if (_message == value) return;
+            _message = value;
+            MessageChanged.InvokeAsync(value);
+            this.PreviewMessageUpdated(value);
+        }
+    }
+
+    /// <summary>´Callback for OnMessageChanged. Mainly used internally.</summary>
+    [Parameter] public EventCallback<string> MessageChanged { get; set; }
+
+    /// <summary>Function to be called when files are uploaded.</summary>
+    [Parameter] public Action<List<string>> AddFiles { get; set; } = (List<string> filesSrc) => Console.WriteLine("EmojiInput: You way want to add an AddImages()-Callback.");
+
+    /// <summary>Placeholder for text input</summary>
+    [Parameter] public string Placeholder { get; set; } = "Your message";
+
+    /// <summary>HTML-Entity, icon or text for bootstrap add-on prepend (input-field).</summary>
+    [Parameter] public string AddonPrepend { get; set; } = "✉";
+
+    /// <summary>If true a btn is shown, to toggle a dropzone for uploading files.</summary>
+    [Parameter] public bool ShowFilePicker { get; set; } = true;
+
+    /// <summary>Shows submit button if true.</summary>
+    [Parameter] public bool ShowSubmit { get; set; } = true;
+
+    /// <summary>Disables submit button if true.</summary>
+    [Parameter] public bool IsSubmitDisabled { get; set; } = false;
+
+    /// <summary>Label for submit button.</summary>
+    [Parameter] public string SubmitBtnLbl { get; set; } = "Send";
+
+    /// <summary>HTML-Entity, icon or text for smiley button.</summary>
+    [Parameter] public string SmileyBtnIcon { get; set; } = "😃";
+
+    /// <summary>HTML-Entity, icon or text for file button.</summary>
+    [Parameter] public string FileBtnIcon { get; set; } = "📂";
+
+    /// <summary>Determines if input-autocomplete is on|off.</summary>
+    [Parameter] public string AutoComplete { get; set; } = "on";
+    #endregion
+
+    #region methods
+    protected void AddEmoji(string emoji) => Message += emoji;
+    private bool IsFilePickerCollapsed { get; set; } = true;
+
+    private void PreviewMessageUpdated(string newValue)
+    {
+        if (newValue != null)
+        {
+            this.PreviewMessage = Markdown.ToHtml(newValue);
+            this.StateHasChanged();
+        }
+    }
+
+    protected override void OnInitialized()
+    {
+        if (CustomSymbols != null)
+        {
+            AllEmojies.Add(CustomSymbols);
+        }
+    }
+
+    private List<List<string>> AllEmojies { get; set; } = EmojiList.EmojiesPerTab;
+
+    private void setInputFocused(bool state)
+    {
+        this._isInputFocused = state;
+        this.PreviewMessageUpdated(this.Message);
+    }
+    #endregion
+}
+
+
