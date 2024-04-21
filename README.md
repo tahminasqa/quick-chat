@@ -1,6 +1,6 @@
 # QuickChat
 
-This is a Complete Chat Application in Blazor WebAssembly 5.0 with SignalR and Identity. UI is taken care by MudBlazor Component Library.
+This application is a web-based communicator where registered users can seamlessly connect with individuals one-on-one, engage in vibrant group discussions, and dive into the intrigue of anonymous conversations. It also features real-time notifications during one-on-one communication, message analytics via the admin dashboard, and profile management.
 
 ![](https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExdHZkZjN1b25yZTVyZHVqcGc5ejBkaHRlZTVua2NtZzFha2F6ajZtNyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/EreWuSuqxuNxidgUV7/giphy.gif)
 
