@@ -1,0 +1,26 @@
+﻿@namespace Quick.Chat.EmojiPicker.Sub
+
+<EmojiPanel ClassEmojiTabBtnActive="@ClassEmojiTabBtnActive" ClassEmojiTabBtnInActive="@ClassEmojiTabBtnInActive">
+    @foreach (List<string> pageLst in EmojiList)
+    {
+    <EmojiPanelTab TabTitle="@pageLst[0]">
+        @foreach (string emoji in pageLst)
+        {
+        <EmojiBtn AddEmoji="@AddEmoji" Emoji="@emoji" />
+        }
+    </EmojiPanelTab>
+    }
+</EmojiPanel>
+
+@code {
+        [Parameter] public EventCallback<string> AddEmoji { get; set; }
+
+        /// <summary>Defines the css-classes for the tab button within the emoji panel (state: active)</summary>
+        [Parameter] public string ClassEmojiTabBtnActive { get; set; }
+
+        /// <summary>Defines the css-classes for the tab button within the emoji panel (state: inactive)</summary>
+        [Parameter] public string ClassEmojiTabBtnInActive { get; set; }
+
+        /// <summary>Emojies separated by tab.</summary>
+        [Parameter] public List<List<string>> EmojiList { get; set; }
+}

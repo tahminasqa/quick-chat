@@ -1,0 +1,53 @@
+﻿@namespace Quick.Chat.EmojiPicker.Sub
+@using Quick.Chat.EmojiPicker
+@using System.Reflection
+
+<style>
+    .scrollable {
+        overflow-y: scroll;
+        height: 400px;
+        width: 250px;
+    }
+</style>
+
+<CascadingValue Value="this">
+    <div class="btn-group" role="group" style="margin-bottom:5px;">
+        @foreach (EmojiPanelTab tabPage in Pages)
+        {
+            <button type="button" class="btn-group @GetButtonClass(tabPage)"
+                    @onclick=@(()=>ActivatePage(tabPage))>
+                @tabPage.TabTitle
+            </button>
+        }
+    </div>
+    <div class="scrollable">
+        @ChildContent
+    </div>
+</CascadingValue>
+
+@code {
+    [Parameter] public RenderFragment ChildContent { get; set; }
+
+    /// <summary>Defines the css-classes for the tab button within the emoji panel (state: active)</summary>
+    [Parameter] public string ClassEmojiTabBtnActive { get; set; }
+
+    /// <summary>Defines the css-classes for the tab button within the emoji panel (state: inactive)</summary>
+    [Parameter] public string ClassEmojiTabBtnInActive { get; set; }
+
+    public EmojiPanelTab ActivePage { get; set; }
+    List<EmojiPanelTab> Pages = new List<EmojiPanelTab>();
+
+    internal void AddPage(EmojiPanelTab tabPage)
+    {
+        Pages.Add(tabPage);
+        if (Pages.Count == 1) ActivePage = tabPage;
+        StateHasChanged();
+    }
+
+    string GetButtonClass(EmojiPanelTab page) => page == ActivePage ? ClassEmojiTabBtnActive : ClassEmojiTabBtnInActive;
+
+    void ActivatePage(EmojiPanelTab page)
+    {
+        ActivePage = page;
+    }
+}

@@ -1,0 +1,22 @@
+﻿@namespace Quick.Chat.EmojiPicker.Sub
+@using Quick.Chat.EmojiPicker
+@using System.Reflection
+
+@if (Parent.ActivePage == this)
+{
+    @ChildContent
+}
+
+@code {
+    [CascadingParameter] private EmojiPanel Parent { get; set; }
+    [Parameter] public RenderFragment ChildContent { get; set; }
+
+    [Parameter] public string TabTitle { get; set; }
+
+    protected override void OnInitialized()
+    {
+        if (Parent == null) throw new ArgumentNullException(nameof(Parent), "EmojiPanelTab must exist within a EmojiPanel.");
+        Parent.AddPage(this);
+        base.OnInitialized();
+    }
+}
