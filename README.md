@@ -12,13 +12,14 @@ This application is a web-based communicator where registered users can seamless
 ![](https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExdHZkZjN1b25yZTVyZHVqcGc5ejBkaHRlZTVua2NtZzFha2F6ajZtNyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/EreWuSuqxuNxidgUV7/giphy.gif)
 
 # Global Access: [Quick Chat](http://20.63.115.250:8090/)
-Notes: Global access might be unreachable because of Azure subscription expiration
+> [!WARNING]
+> Notes: Global access might be unreachable because of Azure subscription expiration
 
 ## Getting Started
 
 ### Prerequisites
 - Clone the Quick Chat repository: https://github.com/tahminasqa/quick-chat
-- (Windows only) Install Visual Studio 2022. Visual Studio contains tooling support for .NET Aspire that you will want to have. [Visual Studio 2022 version 17.10 Preview](https://visualstudio.microsoft.com/vs/preview/).
+- (Windows only) [Install Visual Studio 2022](https://visualstudio.microsoft.com/downloads/)).
   - During installation, ensure that the following are selected:
     - `ASP.NET and web development` workload.
 - Install the [.NET 5 SDK](https://dotnet.microsoft.com/en-us/download/dotnet/5.0)
