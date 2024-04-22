@@ -19,7 +19,7 @@ This application is a web-based communicator where registered users can seamless
 
 ### Prerequisites
 - Clone the Quick Chat repository: https://github.com/tahminasqa/quick-chat
-- (Windows only) [Install Visual Studio 2022](https://visualstudio.microsoft.com/downloads/)).
+- (Windows only) [Install Visual Studio 2022](https://visualstudio.microsoft.com/downloads/).
   - During installation, ensure that the following are selected:
     - `ASP.NET and web development` workload.
 - Install the [.NET 5 SDK](https://dotnet.microsoft.com/en-us/download/dotnet/5.0)
