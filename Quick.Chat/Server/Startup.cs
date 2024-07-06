@@ -22,6 +22,7 @@ using Microsoft.AspNetCore.DataProtection;
 using System.IO;
 using System.Security.Cryptography.X509Certificates;
 using Microsoft.AspNetCore.SignalR;
+using System.Net;
 
 namespace Quick.Chat.Server
 {
@@ -38,6 +39,9 @@ namespace Quick.Chat.Server
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
+
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
+
             var logger = new LoggerConfiguration()
                 .ReadFrom.Configuration(Configuration)
                 .CreateLogger();
@@ -54,7 +58,7 @@ namespace Quick.Chat.Server
             sb.AppendLine();
             sb.AppendLine("******************************************************");
             sb.AppendLine("**                  QuickChat                      **");
-            sb.AppendLine("**               [Version 2.0.0]                   **");
+            sb.AppendLine("**               [Version 2.0.2]                   **");
             sb.AppendLine("**     ©2024 QuickChat. All rights reserved        **");
             sb.AppendLine("******************************************************");
 
@@ -141,13 +145,13 @@ namespace Quick.Chat.Server
             {
                 app.UseExceptionHandler("/Error");
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-                app.UseHsts();
+                //app.UseHsts();
             }
             app.UseCookiePolicy(new CookiePolicyOptions
             {
                 MinimumSameSitePolicy = SameSiteMode.Lax
             });
-            app.UseHttpsRedirection();
+            //app.UseHttpsRedirection();
             app.UseBlazorFrameworkFiles();
             app.UseStaticFiles();
 

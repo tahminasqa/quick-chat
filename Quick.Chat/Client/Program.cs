@@ -15,7 +15,6 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Antiforgery;
 using Microsoft.AspNetCore.Mvc;
-using Quick.Chat.Emoji;
 
 namespace Quick.Chat.Client
 {
@@ -44,7 +43,7 @@ namespace Quick.Chat.Client
                 config.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
             });
 
-            builder.Services.AddEmojiPicker();
+            //builder.Services.AddEmojiPicker();
             builder.Services.AddTransient<IChatManager, ChatManager>();
             await builder.Build().RunAsync();
         }
