@@ -1,6 +1,7 @@
+﻿-- Production appsettings.json
 {
   "ConnectionStrings": {
-    "QuickChatServerDB": "Server=tcp:quickchatsql.database.windows.net,1433;Initial Catalog=quick.chat;User ID=quickchat;Password=qqQQ11!!;MultipleActiveResultSets=False;"
+    "QuickChatServerDB": "Server=tcp:quickchatsql.database.windows.net,1433;Initial Catalog=quick.chat;Persist Security Info=False;User ID=quickchat;Password=78522;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;"
   },
   "Serilog": {
     "Using": [ "Serilog.Sinks.File" ],
@@ -35,7 +36,13 @@
       "Quick.Chat.Client": {
         "Profile": "IdentityServerSPA"
       }
+    },
+    "Key": {
+      "Type": "Development"
     }
   },
   "AllowedHosts": "*"
 }
+
+
+-- Main service will be listening on 80 port
