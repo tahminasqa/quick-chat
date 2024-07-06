@@ -78,17 +78,17 @@ Now listening on: https://localhost:5001
 > [!WARNING]
 > You have the flexibility to utilize any Linux system for deploying QuickChat applications using Docker images, whether it's a Cloud-hosted virtual machine or your own Linux instance. Ensure that both Docker and docker-compose are installed on your Linux machine.
 
- - Pull docker images in your Linux machine: `docker pull tahminasqa/quick.chat:v2.0.0`
+ - Pull docker images in your Linux machine: `docker pull tahminasqa/quick.chat:v2.0.2`
  - Utilize this YAML composition file to fetch the Docker image and manage your services.
 ```
   version: '3.4'
 
     services:
       quick.chat.service:
-        image: tahminasqa/quick.chat:v2.0.0
-        container_name: quick.chat.v2.0.0
+        image: tahminasqa/quick.chat:v2.0.2
+        container_name: quick.chat.v2.0.2
         ports:
-          - "8080:8080"
+          - "8090:80"
         volumes:
           - /quick.chat/config/appsettings.json:/app/appsettings.json
           - /quick.chat/logs:/app/Logs:z
@@ -99,6 +99,53 @@ Now listening on: https://localhost:5001
  - You can manage your application configuration by utilizing the directory path of the `application.json` file as you mount the volume.
  - After setting up the docker-compose, you should be able to observe the docker container running on a specified port.
  - You can freely utilize the hosted URL to gain access to the application
+```
+Sample applicationSettings.json
+{
+  "ConnectionStrings": {
+    "QuickChatServerDB": "Server={YOUR_DB_CONNECTION_STRING}"
+  },
+  "Serilog": {
+    "Using": [ "Serilog.Sinks.File" ],
+    "MinimumLevel": {
+      "Default": "Information",
+      "Override": {
+        "Skoruba": "Information",
+        "Microsoft": "Warning",
+        "System": "Warning"
+      }
+    },
+    "WriteTo": [
+      {
+        "Name": "File",
+        "Args": {
+          "path": "Logs/Quick-Chat-.log",
+          "rollingInterval": "Day",
+          "retainedFileCountLimit": 31,
+          "fileSizeLimitBytes": 10000000,
+          "rollOnFileSizeLimit": true
+        }
+      }
+    ],
+    "Enrich": [ "FromLogContext", "WithMachineName", "WithThreadId" ]
+  },
+  "AppSettings": {
+    "ServicePort": 8080,
+    "CertificatePassword": "IdentityServerSPAwe!@@$%G4974ssA7"
+  },
+  "IdentityServer": {
+    "Clients": {
+      "Quick.Chat.Client": {
+        "Profile": "IdentityServerSPA"
+      }
+    },
+    "Key": {
+      "Type": "Development"
+    }
+  },
+  "AllowedHosts": "*"
+}
+```
 
 
 This project is licensed under GNU V3, so contributions/pull-requests are welcome. All contributors get listed here. 
